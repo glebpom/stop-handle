@@ -31,7 +31,10 @@ impl<T> fmt::Debug for StopReason<T>
         T: fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("StopReason").finish()
+        match self {
+            StopReason::HandleLost => write!(f, "HandleLost"),
+            StopReason::Requested(r) => write!(f, "Requested({:?})", r),
+        }
     }
 }
 
@@ -109,4 +112,32 @@ pub fn stop_handle<T>() -> (StopHandle<T>, StopWait<T>) {
     let stop_wait = StopWait { inner: rx.fuse() };
 
     (stop_handle, stop_wait)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use matches::assert_matches;
+    use tokio::time::delay_for;
+
+    use super::*;
+
+    #[derive(Debug)]
+    pub enum TerminationReason {
+        Manual,
+    }
+
+    #[tokio::test]
+    async fn test_stop_handle() {
+        let (stop_handle, stop_wait) = stop_handle();
+
+        tokio::spawn(async move {
+            delay_for(Duration::from_secs(1)).await;
+            stop_handle.stop(TerminationReason::Manual);
+        });
+
+        let res = stop_wait.await;
+        assert_matches!(res, StopReason::Requested(TerminationReason::Manual));
+    }
 }

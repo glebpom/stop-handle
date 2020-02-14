@@ -1,9 +1,21 @@
 [package]
 name = "stop-handle"
 version = "0.1.0"
-authors = ["Gleb Pomykalov <gleb@lancastr.com>"]
+authors = ["Gleb Pomykalov <glebpom@gmail.com>"]
 edition = "2018"
+description = "Convinient structure to terminate future execution"
+keywords = ["async", "futures", "oneshot", "stop", "terminate"]
+categories = ["asynchronous"]
+license = "MIT"
+homepage = "https://github.com/glebpom/stop-handle"
+documentation = "https://docs.rs/stop-handle/0.1.0/stop-handle/"
+repository = "https://github.com/glebpom/stop-handle"
+readme = "README.md"
 
 [dependencies]
 futures = "0.3.4"
 pin-project-lite = "0.1.4"
+
+[dev-dependencies]
+tokio = { version = "0.2", features = ["macros", "rt-threaded", "time"]}
+matches = "0.1.8"
